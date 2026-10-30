@@ -1,0 +1,38 @@
+{% extends "web/base.html" %}
+
+{% block title %}Planifica tu semana | EatWell{% endblock %}
+
+{% block content %}
+<section class="panel form-panel" aria-labelledby="titulo-inicio">
+    <h1 id="titulo-inicio">Planifica tus comidas de la semana</h1>
+    <p>Ingresa tu presupuesto para generar un menú y su lista de compras.</p>
+    <p><strong>Una persona · 7 días · Desayuno, almuerzo y cena</strong></p>
+
+    {% if sin_plan %}
+        <div class="notice" role="alert">
+            <h2>No encontramos un plan con ese presupuesto</h2>
+            <p>Ajusta el monto e inténtalo nuevamente.</p>
+            {% if presupuesto_minimo is not None %}
+                <p>Con las recetas actuales, el mínimo estimado para cubrir las
+                    21 comidas es <strong>$ {{ presupuesto_minimo|floatformat:"-2gu" }} CLP</strong>,
+                    repitiendo las opciones más económicas.</p>
+            {% else %}
+                <p>Faltan recetas en el catálogo para cubrir todas las comidas.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'home' %}">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <label for="{{ form.presupuesto.id_for_label }}">{{ form.presupuesto.label }}</label>
+        <p class="help" id="ayuda-presupuesto">Ingresa un monto mayor que 0, sin separador de miles. Puedes usar hasta dos decimales.</p>
+        {{ form.presupuesto }}
+        {% if form.presupuesto.errors %}
+            <div role="alert">{{ form.presupuesto.errors }}</div>
+        {% endif %}
+        <button type="submit">Generar planificación</button>
+    </form>
+    <p class="help">El menú puede repetir recetas para ajustarse al presupuesto.</p>
+</section>
+{% endblock %}

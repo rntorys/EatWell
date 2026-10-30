@@ -1,0 +1,90 @@
+{% extends "web/base.html" %}
+
+{% block title %}{% if plan.confirmado %}Plan confirmado{% else %}Tu planificación{% endif %} | EatWell{% endblock %}
+
+{% block content %}
+<section class="panel" aria-labelledby="titulo-plan">
+    {% if plan.confirmado %}
+        <div class="success" role="status">
+            <h1 id="titulo-plan">Plan confirmado</h1>
+            <p>Aceptaste esta planificación. Puedes consultar el menú y la lista de compras en esta sesión.</p>
+        </div>
+    {% else %}
+        <h1 id="titulo-plan">Tu planificación semanal</h1>
+        <p>Revisa las 21 comidas y la lista de compras antes de confirmar.</p>
+    {% endif %}
+    <p>Una persona · De lunes a domingo · Una porción por comida</p>
+
+    <dl class="summary">
+        <div><dt>Presupuesto semanal</dt><dd>$ {{ plan.presupuesto|floatformat:"-2gu" }} CLP</dd></div>
+        <div><dt>Costo total estimado</dt><dd>$ {{ plan.costo_total|floatformat:"-2gu" }} CLP</dd></div>
+        <div><dt>Saldo disponible</dt><dd>$ {{ plan.saldo|floatformat:"-2gu" }} CLP</dd></div>
+    </dl>
+
+    <div class="table-container" tabindex="0" role="region" aria-label="Menú semanal, desplazable en pantallas pequeñas">
+        <table>
+            <caption>Menú semanal</caption>
+            <thead>
+                <tr><th scope="col">Día</th><th scope="col">Desayuno</th><th scope="col">Almuerzo</th><th scope="col">Cena</th></tr>
+            </thead>
+            <tbody>
+                {% for dia in plan.menu %}
+                    <tr>
+                        <th scope="row">{{ dia.dia }}</th>
+                        {% for comida in dia.comidas %}
+                            <td>{{ comida.nombre }}<span class="meal-cost">$ {{ comida.costo|floatformat:"-2gu" }} CLP</span></td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="panel" aria-labelledby="titulo-compras">
+    <h2 id="titulo-compras">Lista de compras</h2>
+    <p>Estas son las cantidades totales para las 21 comidas, agrupadas por ingrediente.
+        Arroz, fideos y lentejas se pesan en seco; los demás ingredientes, antes de cocinar.</p>
+    <div class="table-container" tabindex="0" role="region" aria-label="Lista de compras, desplazable en pantallas pequeñas">
+        <table>
+            <caption class="help">Precios de ejemplo por gramo, mililitro o unidad. No se redondea a envases completos.</caption>
+            <thead>
+                <tr><th scope="col">Ingrediente</th><th scope="col">Cantidad</th><th scope="col">Precio de referencia</th><th scope="col">Subtotal</th></tr>
+            </thead>
+            <tbody>
+                {% for compra in plan.compras %}
+                    <tr>
+                        <th scope="row">{{ compra.nombre }}</th>
+                        <td>{{ compra.cantidad }} {{ compra.unidad }}{% if compra.unidad == "unidad" %}{{ compra.cantidad|pluralize:"es" }}{% endif %}</td>
+                        <td>$ {{ compra.precio_unitario|floatformat:"-2gu" }} / {{ compra.unidad }}</td>
+                        <td>$ {{ compra.subtotal|floatformat:"-2gu" }} CLP</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr><th scope="row" colspan="3">Costo total estimado</th><td>$ {{ plan.costo_total|floatformat:"-2gu" }} CLP</td></tr>
+            </tfoot>
+        </table>
+    </div>
+</section>
+
+<section class="panel" aria-labelledby="titulo-confirmacion">
+    {% if plan.confirmado %}
+        <h2 id="titulo-confirmacion">Tu semana está planificada</h2>
+        <p>Si cambia tu presupuesto, puedes generar otra planificación.</p>
+    {% else %}
+        <h2 id="titulo-confirmacion">¿Confirmas este plan?</h2>
+        <p>Puedes aceptarlo o volver al formulario para ajustar el presupuesto.</p>
+    {% endif %}
+    <form method="post" action="{% url 'plan' %}" class="actions">
+        {% csrf_token %}
+        <input type="hidden" name="plan_id" value="{{ plan.id }}">
+        {% if not plan.confirmado %}
+            <button type="submit" name="accion" value="confirmar">Confirmar plan</button>
+        {% endif %}
+        <button type="submit" name="accion" value="ajustar" class="secondary">
+            {% if plan.confirmado %}Generar otro plan{% else %}Ajustar presupuesto{% endif %}
+        </button>
+    </form>
+</section>
+{% endblock %}
