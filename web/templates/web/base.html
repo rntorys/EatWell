@@ -13,9 +13,9 @@
         <p>Come mejor, gastando menos.</p>
     </header>
     <main>
-        {% for message in messages %}
-            <div class="notice" role="alert">{{ message }}</div>
-        {% endfor %}
+        {% if error %}
+            <div class="notice" role="alert">{{ error }}</div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
     <footer>
