@@ -53,26 +53,34 @@ def calcular_presupuesto_minimo():
     return total
 
 
-def crear_lista_compras(menu): #ESTA DE AQUI -------------------
+def crear_lista_compras(menu):
+    cantidades = {}
+
+    # Acumulamos las cantidades de todas las comidas.
+    for dia in menu:
+        for receta in dia["comidas"]:
+            for ingrediente in receta["ingredientes"]:
+                if ingrediente not in cantidades:
+                    cantidades[ingrediente] = 0
+
+                cantidad = receta["ingredientes"][ingrediente]
+                cantidades[ingrediente] += cantidad
+
+    # Construimos una fila por ingrediente con su subtotal.
     compras = []
+    for ingrediente in sorted(cantidades):
+        datos = INGREDIENTES[ingrediente]
+        cantidad = cantidades[ingrediente]
+        subtotal = cantidad * datos["precio"]
 
-    # Buscamos cada ingrediente del catálogo en todas las comidas.
-    for ingrediente in sorted(INGREDIENTES):
-        cantidad = 0
-        for dia in menu:
-            for receta in dia["comidas"]:
-                if ingrediente in receta["ingredientes"]:
-                    cantidad += receta["ingredientes"][ingrediente]
+        compras.append({
+            "nombre": datos["nombre"],
+            "cantidad": cantidad,
+            "unidad": datos["unidad"],
+            "precio_unitario": datos["precio"],
+            "subtotal": subtotal,
+        })
 
-        if cantidad > 0:
-            datos = INGREDIENTES[ingrediente]
-            compras.append({
-                "nombre": datos["nombre"],
-                "cantidad": cantidad,
-                "unidad": datos["unidad"],
-                "precio_unitario": datos["precio"],
-                "subtotal": cantidad * datos["precio"],
-            })
     return compras
 
 
