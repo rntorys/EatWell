@@ -1,100 +1,198 @@
-/* Presentación mínima para utilizar el prototipo. */
-
+/* Estilos generales */
 * {
-    box-sizing: border-box;
+box-sizing: border-box;
 }
-
 body {
-    margin: 20px;
-    font-family: Arial, sans-serif;
-    color: #222;
-    line-height: 1.4;
+margin: 0;
+background-color: #f4f6f4;
+color: #26332a;
+font-family: Arial, sans-serif;
+line-height: 1.5;
 }
-
 .site-header,
 main,
 footer {
-    max-width: 1000px;
-    margin: auto;
+max-width: 1100px;
+margin: auto;
+padding: 20px;
 }
-
 .brand {
-    font-size: 24px;
-    font-weight: bold;
+color: #286140;
+font-size: 28px;
+font-weight: bold;
+text-decoration: none;
 }
-
+.site-header p {
+margin-top: 4px;
+}
+h1,
+h2 {
+margin-top: 0;
+}
+h1 {
+font-size: 26px;
+}
+h2 {
+font-size: 20px;
+}
+/* Secciones */
 .panel {
-    margin-bottom: 24px;
+margin-bottom: 20px;
+padding: 20px;
+background-color: white;
+border: 1px solid #d5ddd7;
+border-radius: 4px;
 }
-
+.form-panel {
+max-width: 650px;
+margin: 0 auto 20px;
+}
+/* Formulario */
 label {
-    display: block;
-    font-weight: bold;
+display: block;
+margin-top: 20px;
+font-weight: bold;
 }
-
-input,
-button {
-    padding: 6px;
-    margin: 6px 0;
-    font: inherit;
-}
-
 input[type="number"] {
-    display: block;
-    width: 100%;
-    max-width: 280px;
+display: block;
+width: 100%;
+max-width: 350px;
+padding: 10px;
+margin: 10px 0 18px;
+border: 1px solid #819087;
+border-radius: 4px;
+font: inherit;
 }
-
-.notice,
-.success {
-    padding: 10px;
-    border: 1px solid #888;
-    margin-bottom: 16px;
+button {
+padding: 10px 16px;
+background-color: #286140;
+color: white;
+border: 1px solid #286140;
+border-radius: 4px;
+font: inherit;
+cursor: pointer;
 }
-
-.errorlist {
-    color: #900;
+button:hover {
+background-color: #1d492f;
 }
-
-.summary dd {
-    margin: 0 0 12px;
+.secondary {
+background-color: white;
+color: #286140;
 }
-
-.table-container {
-    overflow-x: auto;
+.secondary:hover {
+background-color: #edf4ef;
 }
-
-table {
-    width: 100%;
-    min-width: 520px;
-    border-collapse: collapse;
-    text-align: left;
+.actions {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
 }
-
-th,
-td {
-    padding: 8px;
-    border: 1px solid #ccc;
-    vertical-align: top;
+:focus-visible {
+outline: 3px solid #2165a5;
+outline-offset: 3px;
 }
-
-caption {
-    margin-bottom: 8px;
-    text-align: left;
-    font-weight: bold;
-}
-
+/* Mensajes */
 .help,
 .meal-cost,
 footer {
-    font-size: 14px;
-    color: #555;
+color: #526158;
+font-size: 14px;
 }
-
+.notice,
+.success {
+padding: 15px;
+margin-bottom: 20px;
+border-left: 4px solid;
+}
+.notice {
+background-color: #fff6e5;
+border-color: #a26b13;
+}
+.success {
+background-color: #edf7ef;
+border-color: #286140;
+}
+.notice h2 {
+font-size: 18px;
+}
+.errorlist {
+color: #a12222;
+}
+/* Resumen del presupuesto */
+.summary {
+display: flex;
+flex-wrap: wrap;
+gap: 20px;
+padding: 15px;
+background-color: #edf4ef;
+}
+.summary dt {
+font-size: 14px;
+}
+.summary dd {
+margin: 4px 0 0;
+font-size: 20px;
+font-weight: bold;
+}
+/* Tablas */
+.table-container {
+overflow-x: auto;
+}
+table {
+width: 100%;
+min-width: 520px;
+border-collapse: collapse;
+text-align: left;
+}
+caption {
+margin-bottom: 12px;
+text-align: left;
+font-weight: bold;
+}
+th,
+td {
+padding: 10px;
+border-bottom: 1px solid #d5ddd7;
+vertical-align: top;
+}
+thead,
+tfoot {
+background-color: #edf4ef;
+}
+tbody th {
+font-weight: normal;
+}
+tfoot td {
+font-weight: bold;
+}
 .meal-cost {
-    display: block;
+display: block;
+margin-top: 5px;
 }
-
+/* Pie de página */
+footer {
+text-align: center;
+}
+footer p {
+margin: 4px 0;
+}
+/* Pantallas pequeñas */
+@media (max-width: 600px) {
+.site-header,
+main,
+footer {
+padding: 15px;
+}
+.panel {
+padding: 15px;
+}
+h1 {
+font-size: 23px;
+}
+input[type="number"] {
+max-width: 100%;
+}
 .actions button {
-    margin-right: 8px;
+width: 100%;
+}
 }
