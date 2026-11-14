@@ -1,0 +1,25 @@
+{% extends "web/base.html" %}
+{% block title %}Mis productos | EatWell{% endblock %}
+{% block content %}
+<section class="panel">
+    <h1>Mis productos</h1>
+    <p>Estos productos son privados de tu cuenta. Puedes usarlos al crear tus recetas.</p>
+    <p><a href="{% url 'producto_nuevo' %}">Agregar producto</a> · <a href="{% url 'receta_nueva' %}">Crear receta</a></p>
+    <form method="get"><label><input type="checkbox" name="favoritos" value="on" {% if request.GET.favoritos %}checked{% endif %}> ★ Solo favoritos</label><button type="submit" class="secondary">Filtrar</button></form>
+    <p class="help">Agregar un producto no lo añade a todas las comidas: primero inclúyelo en una receta.
+        Los cambios de precio se aplican al generar un nuevo plan.</p>
+</section>
+{% for producto in pagina %}
+    <article class="panel">
+        <h2>{{ producto.nombre }}</h2>
+        {% include "web/favorito.html" with item=producto tipo="producto" %}
+        {% if producto.foto %}<img class="product-photo" src="{% url 'producto_foto' producto.pk %}" alt="Foto de {{ producto.nombre }}" loading="lazy">{% endif %}
+        <p>{{ producto.cantidad_referencia }} {{ producto.unidad }} por $ {{ producto.precio_referencia|floatformat:"-2gu" }} CLP.</p>
+        {% if producto.propiedades %}<p>{{ producto.propiedades|linebreaksbr }}</p>{% endif %}
+        <a href="{% url 'producto_editar' producto.pk %}">Editar producto</a>
+    </article>
+{% empty %}
+    <p>Todavía no has agregado productos.</p>
+{% endfor %}
+{% include "web/paginacion.html" %}
+{% endblock %}

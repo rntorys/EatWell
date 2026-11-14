@@ -1,0 +1,54 @@
+{% extends "web/base.html" %}
+{% block title %}Precios por región | EatWell{% endblock %}
+{% block content %}
+<section class="panel">
+    <h1>Precios por región</h1>
+    <p>Consulta los productos publicados por ODEPA para la última semana disponible de tu región.</p>
+    <form method="get" action="{% url 'precios' %}">
+        {{ form.as_p }}
+        <button type="submit">Consultar precios</button>
+    </form>
+    <p class="help">Una copia de menos de 24 horas se reutiliza sin volver a consultar ODEPA.
+        ODEPA no ofrece fotos, recetas ni información nutricional en este conjunto.</p>
+</section>
+{% if info_precios %}
+    {% include "web/info_precios.html" %}
+    <section class="panel">
+        <h2>Precios usados por nuestras recetas</h2>
+        <p>Las equivalencias se revisan antes de usarlas. Por ejemplo, pan integral usa hallulla integral
+            y pollo usa pechuga deshuesada. Las unidades sin conversión conocida no se mezclan.</p>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>Ingrediente</th><th>Precio utilizado</th><th>Fuente y equivalencia</th></tr></thead>
+                <tbody>
+                    {% for clave, ingrediente in ingredientes.items %}
+                        <tr><th>{{ ingrediente.nombre }}{% include "web/favorito.html" with item=ingrediente tipo="producto" region=form.region.value %}</th>
+                            <td>$ {{ ingrediente.precio|floatformat:"-2gu" }} / {{ ingrediente.unidad }}</td>
+                            <td>{{ ingrediente.fuente }}<br>{{ ingrediente.referencia }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <section class="panel">
+        <h2>Productos publicados ({{ pagina.paginator.count }} resultados)</h2>
+        <p>Promedio simple de los precios promedio publicados por sector y tipo de comercio,
+            agrupados por producto y unidad. Consultar un producto no lo añade automáticamente a una receta.</p>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>Producto ODEPA</th><th>Unidad publicada</th><th>Precio calculado</th></tr></thead>
+                <tbody>
+                    {% for producto in productos %}
+                        <tr><th>{{ producto.nombre }}{% include "web/favorito.html" with item=producto tipo="producto" region=form.region.value %}</th><td>{{ producto.unidad }}</td>
+                            <td>$ {{ producto.precio|floatformat:"-2gu" }}</td></tr>
+                    {% empty %}
+                        <tr><td colspan="3">No encontramos productos con ese nombre.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include "web/paginacion.html" %}
+        <p class="help">Algunos nombres pueden contener caracteres dañados en la fuente original.</p>
+    </section>
+{% endif %}
+{% endblock %}

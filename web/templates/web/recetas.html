@@ -1,0 +1,35 @@
+{% extends "web/base.html" %}
+{% block title %}Recetas | EatWell{% endblock %}
+{% block content %}
+<section class="panel">
+    <h1>Recetas</h1>
+    <p>Recetas del catálogo de EatWell y tus propias recetas. Todas las cantidades son para una persona.</p>
+    <p><a href="{% url 'receta_nueva' %}?region={{ form.region.value|urlencode }}">Crear mi receta</a></p>
+    <form method="get">{{ form.as_p }}<button type="submit">Buscar recetas</button></form>
+    <p class="help">Tus recetas se prueban primero al generar un plan, si el presupuesto lo permite.
+        ODEPA aporta precios; las recetas del catálogo son ejemplos de EatWell.</p>
+    {% if propias %}
+        <details><summary>Editar mis recetas (también las no disponibles en esta región)</summary>
+            <ul>{% for propia in propias %}<li><a href="{% url 'receta_editar' propia.pk %}?region={{ form.region.value|urlencode }}">{{ propia.nombre }}</a></li>{% endfor %}</ul>
+        </details>
+    {% endif %}
+</section>
+{% if info_precios %}{% include "web/info_precios.html" %}{% endif %}
+{% if omitidas %}<p class="notice">Faltan precios o ingredientes en esta región para: {{ omitidas|join:", " }}.
+    Estas recetas se conservan, pero no se usan en este cálculo.</p>{% endif %}
+{% for receta in pagina %}
+    <article class="panel">
+        <h2>{{ receta.nombre }}</h2>
+        {% include "web/favorito.html" with item=receta tipo="receta" region=form.region.value %}
+        <p>{{ receta.tipo|capfirst }} · Una porción · $ {{ receta.costo|floatformat:"-2gu" }} CLP</p>
+        {% if receta.personal_id %}<p>Tu receta · <a href="{% url 'receta_editar' receta.personal_id %}?region={{ form.region.value|urlencode }}">Editar</a></p>{% endif %}
+        <details><summary>Ver ingredientes{% if receta.instrucciones %} y preparación{% endif %}</summary>
+            <ul>{% for ingrediente in receta.detalle %}<li>{{ ingrediente.cantidad }} {{ ingrediente.unidad }} de {{ ingrediente.nombre }}</li>{% endfor %}</ul>
+            {% if receta.instrucciones %}<p>{{ receta.instrucciones|linebreaksbr }}</p>{% endif %}
+        </details>
+    </article>
+{% empty %}
+    <p>No hay recetas disponibles con esta búsqueda.</p>
+{% endfor %}
+{% include "web/paginacion.html" %}
+{% endblock %}

@@ -7,23 +7,39 @@
     {% if plan.confirmado %}
         <div class="success" role="status">
             <h1 id="titulo-plan">Plan confirmado</h1>
-            <p>Aceptaste esta planificación. Puedes consultar el menú y la lista de compras en esta sesión.</p>
+            <p>Aceptaste esta planificación. Queda guardada en tu cuenta para consultarla al volver a iniciar sesión.</p>
         </div>
     {% else %}
-        <h1 id="titulo-plan">Tu planificación semanal</h1>
-        <p>Revisa las 21 comidas y la lista de compras antes de confirmar.</p>
+        <h1 id="titulo-plan">Tu planificación</h1>
+        <p>Revisa las {{ plan.cantidad_comidas }} comidas y la lista de compras antes de confirmar.</p>
+        <p class="help">Este plan ya está guardado en tu cuenta, pendiente de confirmación.</p>
     {% endif %}
-    <p>Una persona · De lunes a domingo · Una porción por comida</p>
+    <p>Una persona · {{ plan.menu|length }} días seleccionados · {{ plan.cantidad_comidas }} comidas · Una porción por comida</p>
+    <p class="help">Puedes editar el plan, incluso si estaba confirmado. Cada cambio recalcula las compras
+        y requiere confirmar nuevamente. Quitar una comida deja ese espacio sin cubrir.</p>
+    {% if plan.precios %}
+        {% include "web/info_precios.html" with info_precios=plan.precios %}
+    {% else %}
+        <p class="help">Este plan se generó con el catálogo anterior de precios de ejemplo.</p>
+    {% endif %}
 
     <dl class="summary">
-        <div><dt>Presupuesto semanal</dt><dd>$ {{ plan.presupuesto|floatformat:"-2gu" }} CLP</dd></div>
+        <div><dt>Presupuesto total del período</dt><dd>$ {{ plan.presupuesto|floatformat:"-2gu" }} CLP</dd></div>
         <div><dt>Costo total estimado</dt><dd>$ {{ plan.costo_total|floatformat:"-2gu" }} CLP</dd></div>
         <div><dt>Saldo disponible</dt><dd>$ {{ plan.saldo|floatformat:"-2gu" }} CLP</dd></div>
     </dl>
 
-    <div class="table-container" tabindex="0" role="region" aria-label="Menú semanal, desplazable en pantallas pequeñas">
+    <details><summary>Cambiar presupuesto conservando las comidas</summary>
+        <form method="post" action="{% url 'presupuesto_plan' %}">
+            {% csrf_token %}<input type="hidden" name="plan_id" value="{{ plan.id }}">
+            <label for="presupuesto-plan">Nuevo presupuesto total (CLP)</label>
+            <input id="presupuesto-plan" type="number" name="presupuesto" value="{{ plan.presupuesto }}" min="0.01" step="0.01" required>
+            <button type="submit">Guardar presupuesto</button>
+        </form>
+    </details>
+    <div class="table-container" tabindex="0" role="region" aria-label="Menú del período, desplazable en pantallas pequeñas">
         <table>
-            <caption>Menú semanal</caption>
+            <caption>Menú del período</caption>
             <thead>
                 <tr><th scope="col">Día</th><th scope="col">Desayuno</th><th scope="col">Almuerzo</th><th scope="col">Cena</th></tr>
             </thead>
@@ -32,7 +48,10 @@
                     <tr>
                         <th scope="row">{{ dia.dia }}</th>
                         {% for comida in dia.comidas %}
-                            <td>{{ comida.nombre }}<span class="meal-cost">$ {{ comida.costo|floatformat:"-2gu" }} CLP</span></td>
+                            <td>{{ comida.nombre }}<span class="meal-cost">$ {{ comida.costo|floatformat:"-2gu" }} CLP</span>
+                                {% if comida.editada %}<span class="help">Editada en este plan</span><br>{% endif %}
+                                <a href="{% url 'editar_comida' forloop.parentloop.counter0 forloop.counter0 %}">Editar o reemplazar</a>
+                            </td>
                         {% endfor %}
                     </tr>
                 {% endfor %}
@@ -43,26 +62,32 @@
 
 <section class="panel" aria-labelledby="titulo-compras">
     <h2 id="titulo-compras">Lista de compras</h2>
-    <p>Estas son las cantidades totales para las 21 comidas, agrupadas por ingrediente.
+    <p>Estas son las cantidades totales para las {{ plan.cantidad_comidas }} comidas, agrupadas por ingrediente.
         Arroz, fideos y lentejas se pesan en seco; los demás ingredientes, antes de cocinar.</p>
     <div class="table-container" tabindex="0" role="region" aria-label="Lista de compras, desplazable en pantallas pequeñas">
         <table>
-            <caption class="help">Precios de ejemplo por gramo, mililitro o unidad. No se redondea a envases completos.</caption>
+            <caption class="help">Precios por gramo, mililitro o unidad, redondeados a dos decimales.
+                No se redondean cantidades a envases completos. Se conservan los precios usados al generar este plan.</caption>
             <thead>
-                <tr><th scope="col">Ingrediente</th><th scope="col">Cantidad</th><th scope="col">Precio de referencia</th><th scope="col">Subtotal</th></tr>
+                <tr><th scope="col">Ingrediente</th><th scope="col">Cantidad</th><th scope="col">Precio de referencia</th><th scope="col">Subtotal</th><th scope="col">Fuente</th></tr>
             </thead>
             <tbody>
                 {% for compra in plan.compras %}
                     <tr>
-                        <th scope="row">{{ compra.nombre }}</th>
+                        <th scope="row">{{ compra.nombre }}
+                            {% if compra.clave %}<br><a href="{% url 'editar_producto_plan' compra.clave %}">Quitar o reemplazar en todo el plan</a>{% endif %}
+                        </th>
                         <td>{{ compra.cantidad }} {{ compra.unidad }}{% if compra.unidad == "unidad" %}{{ compra.cantidad|pluralize:"es" }}{% endif %}</td>
                         <td>$ {{ compra.precio_unitario|floatformat:"-2gu" }} / {{ compra.unidad }}</td>
                         <td>$ {{ compra.subtotal|floatformat:"-2gu" }} CLP</td>
+                        <td>{{ compra.fuente|default:"Ejemplo" }}
+                            {% if compra.referencia %}<span class="help">{{ compra.referencia }}</span>{% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
             <tfoot>
-                <tr><th scope="row" colspan="3">Costo total estimado</th><td>$ {{ plan.costo_total|floatformat:"-2gu" }} CLP</td></tr>
+                <tr><th scope="row" colspan="3">Costo total estimado</th><td>$ {{ plan.costo_total|floatformat:"-2gu" }} CLP</td><td></td></tr>
             </tfoot>
         </table>
     </div>
@@ -70,7 +95,7 @@
 
 <section class="panel" aria-labelledby="titulo-confirmacion">
     {% if plan.confirmado %}
-        <h2 id="titulo-confirmacion">Tu semana está planificada</h2>
+        <h2 id="titulo-confirmacion">Tu período está planificado</h2>
         <p>Si cambia tu presupuesto, puedes generar otra planificación.</p>
     {% else %}
         <h2 id="titulo-confirmacion">¿Confirmas este plan?</h2>

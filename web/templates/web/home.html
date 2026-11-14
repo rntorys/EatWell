@@ -1,12 +1,17 @@
 {% extends "web/base.html" %}
 
-{% block title %}Planifica tu semana | EatWell{% endblock %}
+{% block title %}Planifica tus comidas | EatWell{% endblock %}
 
 {% block content %}
 <section class="panel form-panel" aria-labelledby="titulo-inicio">
-    <h1 id="titulo-inicio">Planifica tus comidas de la semana</h1>
+    <h1 id="titulo-inicio">Planifica tus comidas</h1>
     <p>Ingresa tu presupuesto para generar un menú y su lista de compras.</p>
-    <p><strong>Una persona · 7 días · Desayuno, almuerzo y cena</strong></p>
+    <p><strong>Una persona · Desayuno, almuerzo y cena en cada día que elijas</strong></p>
+    {% if tiene_plan %}
+        <p><a href="{% url 'plan' %}">Ver mi plan guardado</a>.</p>
+        <p class="help">Tu plan actual se reemplazará cuando generes otro válido.
+            Si el nuevo monto no alcanza, conservaremos el anterior.</p>
+    {% endif %}
 
     {% if sin_plan %}
         <div class="notice" role="alert">
@@ -14,7 +19,7 @@
             <p>Ajusta el monto e inténtalo nuevamente.</p>
             {% if presupuesto_minimo is not None %}
                 <p>Con las recetas actuales, el mínimo estimado para cubrir las
-                    21 comidas es <strong>$ {{ presupuesto_minimo|floatformat:"-2gu" }} CLP</strong>,
+                    {{ cantidad_comidas }} comidas es <strong>$ {{ presupuesto_minimo|floatformat:"-2gu" }} CLP</strong>,
                     repitiendo las opciones más económicas.</p>
             {% else %}
                 <p>Faltan recetas en el catálogo para cubrir todas las comidas.</p>
@@ -22,9 +27,39 @@
         </div>
     {% endif %}
 
+    {% if info_precios %}
+        {% include "web/info_precios.html" %}
+    {% endif %}
+    <h2>1. Elige el período</h2>
+    <form method="get" action="{% url 'home' %}">
+        {{ periodo_form.as_p }}
+        <button type="submit" class="secondary">Mostrar días del período</button>
+    </form>
+    <p class="help">Un mes incluye automáticamente sus 28, 29, 30 o 31 días.
+        Elige el período antes de completar el presupuesto.</p>
+    <h2>2. Selecciona los días y el presupuesto total</h2>
     <form method="post" action="{% url 'home' %}">
         {% csrf_token %}
+        <input type="hidden" name="modo" value="{{ periodo_form.modo.value }}">
+        <input type="hidden" name="inicio" value="{{ periodo_form.inicio.value|default:'' }}">
+        <input type="hidden" name="mes" value="{{ periodo_form.mes.value|default:'' }}">
+        {% if periodo_form.sin_fines.value %}<input type="hidden" name="sin_fines" value="on">{% endif %}
+        <input type="hidden" name="calendario_presentado" value="1">
+        <fieldset><legend>Días que quieres cubrir</legend>
+            <div class="calendar-days">
+                {% for dia in calendario %}
+                    <label><input type="checkbox" name="dias" value="{{ dia.valor }}" {% if dia.marcado %}checked{% endif %}> {{ dia.etiqueta }}</label>
+                {% endfor %}
+            </div>
+        </fieldset>
+        <p class="help">Desmarca las fechas que no necesites. Debe quedar al menos un día.
+            El presupuesto es para todo el período, no se multiplica por semana.</p>
         {{ form.non_field_errors }}
+        <label for="{{ form.region.id_for_label }}">{{ form.region.label }}</label>
+        {{ form.region }}
+        {{ form.region.errors }}
+        <p class="help">Elige tu región. Se muestran las regiones cubiertas por ODEPA;
+            no usamos precios de otra región si la tuya no está disponible.</p>
         <label for="{{ form.presupuesto.id_for_label }}">{{ form.presupuesto.label }}</label>
         <p class="help" id="ayuda-presupuesto">Ingresa un monto mayor que 0, sin separador de miles. Puedes usar hasta dos decimales.</p>
         {{ form.presupuesto }}
@@ -34,5 +69,8 @@
         <button type="submit">Generar planificación</button>
     </form>
     <p class="help">El menú puede repetir recetas para ajustarse al presupuesto.</p>
+    <p class="help">También considera tus recetas personales. Puedes crearlas en <a href="{% url 'recetas' %}">Recetas</a>
+        usando ingredientes existentes o tus propios productos.</p>
+    <p class="help">Después de generar la propuesta puedes cambiar sus comidas e ingredientes antes de confirmarla.</p>
 </section>
 {% endblock %}

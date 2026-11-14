@@ -11,6 +11,23 @@
     <header class="site-header">
         <a class="brand" href="{% url 'home' %}">EatWell</a>
         <p>Come mejor, gastando menos.</p>
+        <nav class="account-nav" aria-label="Cuenta">
+            {% if user.is_authenticated %}
+                <span>Hola, {{ user.username }}</span>
+                <a href="{% url 'home' %}">Planificar</a>
+                <a href="{% url 'plan' %}">Mi plan</a>
+                <a href="{% url 'precios' %}">Precios por región</a>
+                <a href="{% url 'productos' %}">Mis productos</a>
+                <a href="{% url 'recetas' %}">Recetas</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="secondary">Cerrar sesión</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Iniciar sesión</a>
+                <a href="{% url 'registro' %}">Crear cuenta</a>
+            {% endif %}
+        </nav>
     </header>
     <main>
         {% if error %}
@@ -19,8 +36,9 @@
         {% block content %}{% endblock %}
     </main>
     <footer>
-        <p>Prototipo con precios ficticios en pesos chilenos (CLP).</p>
+        <p>Precios referenciales en pesos chilenos (CLP). No garantizan el precio de una tienda.</p>
         <p>El costo estima las cantidades utilizadas, no la compra de envases completos.</p>
     </footer>
+<script src="{% static 'web/js/favoritos.js' %}" defer></script>
 </body>
 </html>

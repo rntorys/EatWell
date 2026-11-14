@@ -1,0 +1,39 @@
+{% extends "web/base.html" %}
+{% block title %}Mi receta | EatWell{% endblock %}
+{% block content %}
+<section class="panel form-panel">
+    <h1>{% if receta %}Editar mi receta{% else %}Crear mi receta{% endif %}</h1>
+    <p>Primero elige la región para cargar los ingredientes disponibles.</p>
+    <form method="get">{{ region_form.as_p }}<button type="submit" class="secondary">Cargar ingredientes de la región</button></form>
+    <p class="help">Cambiar de región recarga esta página. Hazlo antes de completar la receta.</p>
+    <p><a href="{% url 'producto_nuevo' %}" target="_blank" rel="noopener">Agregar un producto propio en otra pestaña</a>.
+        Después, vuelve a cargar los ingredientes antes de escribir la receta.</p>
+</section>
+{% if info_precios %}{% include "web/info_precios.html" %}{% endif %}
+{% if faltantes %}<p class="notice">Algunos ingredientes guardados no están disponibles en esta región.
+    Puedes elegir otra región o reemplazarlos antes de guardar.</p>{% endif %}
+{% include "web/selector_favoritos.html" with region=region_form.region.value %}
+<section class="panel form-panel">
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="region" value="{{ region_form.region.value }}">
+        {{ form.as_p }}
+        <h2>Ingredientes para una porción</h2>
+        <p>Escribe un nombre y selecciona una sugerencia. La unidad aparece entre paréntesis.
+            Puedes usar hasta 12 ingredientes distintos; deja vacíos los que no necesites.</p>
+        <datalist id="ingredientes-disponibles">
+            {% for item in selector_productos %}<option value="{{ item.etiqueta }}" data-clave="{{ item.clave }}" data-favorito="{% if item.favorito %}1{% else %}0{% endif %}"></option>{% endfor %}
+        </datalist>
+        {{ filas.management_form }}
+        {{ filas.non_form_errors }}
+        {% for fila in filas %}
+            <details class="ingredient-row" {% if forloop.counter < 4 or fila.has_changed or fila.errors %}open{% endif %}>
+                <summary>Ingrediente {{ forloop.counter }}</summary>
+                {{ fila.as_p }}
+            </details>
+        {% endfor %}
+        <button type="submit">Guardar receta</button>
+        <a href="{% url 'recetas' %}">Volver</a>
+    </form>
+</section>
+{% endblock %}

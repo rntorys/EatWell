@@ -53,7 +53,10 @@ display: block;
 margin-top: 20px;
 font-weight: bold;
 }
-input[type="number"] {
+input[type="number"],
+input[type="text"],
+input[type="password"],
+select {
 display: block;
 width: 100%;
 max-width: 350px;
@@ -61,6 +64,63 @@ padding: 10px;
 margin: 10px 0 18px;
 border: 1px solid #819087;
 border-radius: 4px;
+font: inherit;
+}
+textarea {
+width: 100%;
+max-width: 100%;
+padding: 10px;
+font: inherit;
+}
+.pagination {
+display: flex;
+flex-wrap: wrap;
+gap: 12px;
+margin: 20px 0;
+}
+.product-photo {
+width: 160px;
+height: 160px;
+object-fit: contain;
+}
+.ingredient-row {
+padding: 12px;
+margin: 12px 0;
+border: 1px solid #d5ddd7;
+}
+.calendar-days {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+gap: 8px;
+}
+.calendar-days label {
+font-weight: normal;
+margin: 0;
+}
+.favorite-form {
+display: inline-flex;
+align-items: center;
+gap: 5px;
+}
+.favorite-button {
+padding: 3px 9px;
+font-size: 22px;
+}
+.favorite-items {
+max-height: 260px;
+overflow-y: auto;
+margin: 12px 0;
+}
+.favorite-item {
+padding: 8px;
+border-bottom: 1px solid #d5ddd7;
+}
+.favorite-status {
+font-size: 12px;
+}
+input[type="date"], input[type="month"], input[type="search"] {
+max-width: 100%;
+padding: 8px;
 font: inherit;
 }
 button {
@@ -86,6 +146,19 @@ background-color: #edf4ef;
 display: flex;
 flex-wrap: wrap;
 gap: 10px;
+}
+.account-nav {
+display: flex;
+align-items: center;
+flex-wrap: wrap;
+gap: 15px;
+}
+.account-nav a {
+color: #286140;
+}
+.helptext {
+color: #526158;
+font-size: 14px;
 }
 :focus-visible {
 outline: 3px solid #2165a5;
@@ -189,7 +262,10 @@ padding: 15px;
 h1 {
 font-size: 23px;
 }
-input[type="number"] {
+input[type="number"],
+input[type="text"],
+input[type="password"],
+select {
 max-width: 100%;
 }
 .actions button {

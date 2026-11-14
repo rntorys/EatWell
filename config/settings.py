@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,14 @@ SECRET_KEY = 'django-insecure-hx1v*k_$n3d09q7keob2ay$2&+luayq_h+bxjniv8b*l--&ih)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Para probar desde el celular, se puede añadir la IP local mediante esta variable.
+ALLOWED_HOSTS = os.environ.get(
+    'EATWELL_ALLOWED_HOSTS', 'localhost,127.0.0.1,[::1]'
+).split(',')
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'plan'
+LOGOUT_REDIRECT_URL = 'login'
 
 
 # Application definition
@@ -121,6 +129,9 @@ NUMBER_GROUPING = 3
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Las fotos se entregan mediante una vista que comprueba el dueño del producto.
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Email

@@ -1,0 +1,16 @@
+{% extends "web/base.html" %}
+
+{% block title %}Crear cuenta | EatWell{% endblock %}
+
+{% block content %}
+<section class="panel form-panel" aria-labelledby="titulo-registro">
+    <h1 id="titulo-registro">Crear cuenta</h1>
+    <p>Elige un nombre de usuario y una contraseña para guardar tu planificación.</p>
+    <form method="post" action="{% url 'registro' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Crear cuenta</button>
+    </form>
+    <p>¿Ya tienes cuenta? <a href="{% url 'login' %}">Iniciar sesión</a>.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "web/base.html" %}
+{% block title %}Editar comida | EatWell{% endblock %}
+{% block content %}
+<section class="panel">
+    <h1>Editar {{ comida.tipo }} · {{ dia.dia }}</h1>
+    <p>Comida actual: <strong>{{ comida.nombre }}</strong>.</p>
+    <p>Presupuesto total: $ {{ plan.presupuesto|floatformat:"-2gu" }} · Costo actual: $ {{ plan.costo_total|floatformat:"-2gu" }}.</p>
+    {% if propuesta %}<p>Costo de la propuesta: $ {{ propuesta.costo_total|floatformat:"-2gu" }}. Si hubo un error, el plan anterior sigue guardado.</p>{% endif %}
+    <p><a href="{% url 'plan' %}">Volver al plan</a></p>
+    <p class="help">Este cambio afecta solo esta comida del plan. No modifica la receta del catálogo.
+        Los ingredientes que ya estaban disponibles conservan el precio guardado.</p>
+</section>
+<section class="panel">
+    <h2>Reemplazar por otra receta</h2>
+    <form method="post">
+        {% csrf_token %}<input type="hidden" name="plan_id" value="{{ plan.id }}">
+        <label for="receta-reemplazo">Receta (favoritas primero)</label>
+        <select name="receta" id="receta-reemplazo" required>
+            {% for receta in recetas %}<option class="recipe-option" value="{{ receta.clave }}" data-clave="{{ receta.clave }}" data-favorito="{% if receta.favorito %}1{% else %}0{% endif %}">{{ receta.nombre }} · {{ receta.tipo }}</option>{% endfor %}
+        </select>
+        <button type="submit" name="accion" value="reemplazar">Usar esta receta</button>
+    </form>
+    <details class="favorite-picker" data-lista="receta-reemplazo">
+        <summary>☆ Buscar y marcar recetas favoritas</summary>
+        <label>Buscar receta <input type="search" class="favorite-search"></label>
+        <label><input type="checkbox" class="favorite-only"> ★ Solo favoritas</label>
+        <div class="favorite-items">
+            {% for receta in recetas %}<div class="favorite-item" data-clave="{{ receta.clave }}" data-favorito="{% if receta.favorito %}1{% else %}0{% endif %}">
+                <span>{{ receta.nombre }}</span>
+                {% include "web/favorito.html" with item=receta tipo="receta" region=plan.precios.region_id %}
+            </div>{% endfor %}
+        </div>
+    </details>
+</section>
+{% include "web/selector_favoritos.html" with region=plan.precios.region_id %}
+<section class="panel form-panel">
+    <h2>Editar ingredientes y cantidades</h2>
+    <p>Elige un producto distinto para reemplazarlo, cambia la cantidad, marca Eliminar o usa una fila vacía para añadir otro.</p>
+    <form method="post">
+        {% csrf_token %}<input type="hidden" name="plan_id" value="{{ plan.id }}">
+        {{ nombre_form.as_p }}
+        <datalist id="ingredientes-disponibles">
+            {% for item in selector_productos %}<option value="{{ item.etiqueta }}" data-clave="{{ item.clave }}" data-favorito="{% if item.favorito %}1{% else %}0{% endif %}"></option>{% endfor %}
+        </datalist>
+        {{ filas.management_form }}{{ filas.non_form_errors }}
+        {% for fila in filas %}
+            <details class="ingredient-row" {% if forloop.counter < 4 or fila.has_changed or fila.errors %}open{% endif %}>
+                <summary>Ingrediente {{ forloop.counter }}</summary>{{ fila.as_p }}
+            </details>
+        {% endfor %}
+        <button type="submit" name="accion" value="editar">Recalcular y guardar cambios</button>
+    </form>
+</section>
+<section class="panel">
+    <h2>Quitar esta comida</h2>
+    <p>Se quitarán sus ingredientes de las compras. Este espacio quedará sin cubrir; podrás añadir otra comida después.</p>
+    <form method="post">{% csrf_token %}<input type="hidden" name="plan_id" value="{{ plan.id }}">
+        <button type="submit" name="accion" value="quitar" class="secondary">Quitar comida del plan</button>
+    </form>
+</section>
+{% endblock %}

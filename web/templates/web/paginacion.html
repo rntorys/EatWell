@@ -1,0 +1,11 @@
+<nav class="pagination" aria-label="Páginas de resultados">
+    {% if pagina.has_previous %}
+        <a href="?{{ filtros }}&amp;pagina=1">Primera</a>
+        <a href="?{{ filtros }}&amp;pagina={{ pagina.previous_page_number }}">Anterior</a>
+    {% endif %}
+    <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }} · {{ pagina.paginator.count }} resultados</span>
+    {% if pagina.has_next %}
+        <a href="?{{ filtros }}&amp;pagina={{ pagina.next_page_number }}">Siguiente</a>
+        <a href="?{{ filtros }}&amp;pagina={{ pagina.paginator.num_pages }}">Última</a>
+    {% endif %}
+</nav>

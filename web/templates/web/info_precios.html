@@ -1,0 +1,13 @@
+<div class="notice">
+    <p><strong>Precios de {{ info_precios.region }}</strong> · Semana desde {{ info_precios.semana }}.</p>
+    <p class="help">Fuente: <a href="{{ info_precios.url }}">ODEPA, precios al consumidor</a> (CC BY).
+        EatWell calcula un promedio simple de los registros seleccionados de la región;
+        no es un promedio oficial regional ni un precio en tiempo real.</p>
+    {% if info_precios.faltantes %}
+        <p><strong>Este cálculo combina precios ODEPA y precios de ejemplo.</strong>
+            Sin equivalencia disponible: {{ info_precios.faltantes|join:", " }}.</p>
+    {% endif %}
+    {% if info_precios.aviso %}<p role="status">{{ info_precios.aviso }}</p>{% endif %}
+    {% if info_precios.recetas_omitidas %}<p>No se pudieron usar estas recetas propias porque faltan ingredientes en esta región:
+        {{ info_precios.recetas_omitidas|join:", " }}. Siguen guardadas en tu cuenta.</p>{% endif %}
+</div>

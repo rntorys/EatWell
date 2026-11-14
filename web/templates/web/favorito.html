@@ -1,0 +1,10 @@
+<form method="post" action="{% url 'favorito' %}" class="favorite-form" data-clave="{{ item.clave }}" data-tipo="{{ tipo }}">
+    {% csrf_token %}
+    <input type="hidden" name="tipo" value="{{ tipo }}">
+    <input type="hidden" name="clave" value="{{ item.clave }}">
+    <input type="hidden" name="region" value="{{ region|default:'13' }}">
+    <input type="hidden" name="volver" value="{{ request.get_full_path }}">
+    <input type="hidden" name="accion" value="{% if item.favorito %}quitar{% else %}agregar{% endif %}">
+    <button type="submit" class="secondary favorite-button" aria-pressed="{% if item.favorito %}true{% else %}false{% endif %}" aria-label="Favorito: {{ item.nombre }}">{% if item.favorito %}★{% else %}☆{% endif %}</button>
+    <span class="favorite-status" role="status"></span>
+</form>

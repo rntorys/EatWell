@@ -1,0 +1,17 @@
+{% extends "web/base.html" %}
+
+{% block title %}Iniciar sesión | EatWell{% endblock %}
+
+{% block content %}
+<section class="panel form-panel" aria-labelledby="titulo-login">
+    <h1 id="titulo-login">Iniciar sesión</h1>
+    <p>Entra a tu cuenta para consultar tu plan y tu lista de compras.</p>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit">Ingresar</button>
+    </form>
+    <p>¿No tienes cuenta? <a href="{% url 'registro' %}">Crear una cuenta</a>.</p>
+</section>
+{% endblock %}
