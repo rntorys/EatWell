@@ -10,8 +10,8 @@ NOMBRES_DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado",
 
 class PeriodoForm(forms.Form):
     modo = forms.ChoiceField(label="Período", choices=[("7", "7 días"), ("28", "28 días"), ("30", "30 días"), ("31", "31 días"), ("mes", "Un mes del calendario")])
-    inicio = forms.DateField(label="Fecha inicial (para períodos de días)", required=False, widget=forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"))
-    mes = forms.CharField(label="Mes (para un mes del calendario)", required=False, widget=forms.TextInput(attrs={"type": "month"}))
+    inicio = forms.DateField(label="¿Desde qué día?", required=False, widget=forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"))
+    mes = forms.CharField(label="¿Qué mes?", required=False, widget=forms.TextInput(attrs={"type": "month"}))
     sin_fines = forms.BooleanField(label="Excluir sábados y domingos", required=False)
 
     def clean(self):

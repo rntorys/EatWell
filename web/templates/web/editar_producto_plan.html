@@ -1,33 +1,35 @@
 {% extends "web/base.html" %}
 {% block title %}Cambiar producto del plan | EatWell{% endblock %}
+{% block page_class %}page-product-editor{% endblock %}
 {% block content %}
-<section class="panel">
+<section class="panel page-intro">
+    <p class="eyebrow">Personaliza tus ingredientes</p>
     <h1>Cambiar {{ producto.nombre }} en todo el plan</h1>
     <p>Unidad actual: {{ producto.unidad }}. Afecta todas las comidas que usan este producto.</p>
     <p>Presupuesto: $ {{ plan.presupuesto|floatformat:"-2gu" }} · Costo actual: $ {{ plan.costo_total|floatformat:"-2gu" }}.</p>
     {% if propuesta %}<p>Costo de la propuesta: $ {{ propuesta.costo_total|floatformat:"-2gu" }}. Si hubo un error, no se guardó el cambio.</p>{% endif %}
-    <p><a href="{% url 'plan' %}">Volver al plan</a></p>
+    <p><a class="back-link" href="{% url 'plan' %}">← Volver al plan</a></p>
 </section>
 {% include "web/selector_favoritos.html" with region=plan.precios.region_id %}
-<section class="panel form-panel">
+<section class="panel form-panel product-replacement">
     <h2>Reemplazar producto</h2>
     <p>Con la misma unidad puedes dejar vacía la cantidad para conservar la de cada comida.
         Si cambias de unidad, escribe una nueva cantidad para cada comida afectada.</p>
-    <form method="post">
+    <form class="replacement-form" method="post">
         {% csrf_token %}<input type="hidden" name="plan_id" value="{{ plan.id }}">
-        {{ form.as_p }}
+        {% include "web/campos_formulario.html" %}
         <datalist id="ingredientes-disponibles">
             {% for item in selector_productos %}<option value="{{ item.etiqueta }}" data-clave="{{ item.clave }}" data-favorito="{% if item.favorito %}1{% else %}0{% endif %}"></option>{% endfor %}
         </datalist>
-        <button type="submit" name="accion" value="reemplazar">Recalcular y reemplazar</button>
+        <div class="form-actions"><button class="button" type="submit" name="accion" value="reemplazar">Recalcular y reemplazar</button></div>
     </form>
 </section>
-<section class="panel">
+<section class="panel danger-panel">
     <h2>Quitar producto de todas las comidas</h2>
     <p>Se elimina del menú y las compras de este plan. Tu catálogo de productos y recetas se conserva.
         Si una comida queda sin ingredientes, se marcará como omitida.</p>
-    <form method="post">{% csrf_token %}<input type="hidden" name="plan_id" value="{{ plan.id }}">
-        <button type="submit" name="accion" value="quitar" class="secondary">Quitar {{ producto.nombre }} del plan</button>
+    <form class="remove-form" method="post">{% csrf_token %}<input type="hidden" name="plan_id" value="{{ plan.id }}">
+        <button type="submit" name="accion" value="quitar" class="button danger">Quitar {{ producto.nombre }} del plan</button>
     </form>
 </section>
 {% endblock %}

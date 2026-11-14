@@ -113,6 +113,28 @@ class PlanEditableTests(TestCase):
         self.assertContains(respuesta, 'value="2028-02-29"')
         self.assertEqual(self.plan(), anterior)
 
+    def test_revisar_dias_sin_javascript_conserva_presupuesto_y_plan(self):
+        anterior = self.plan()
+        respuesta = self.client.post("/", {
+            "accion": "revisar_dias", "modo": "mes", "mes": "2028-02", "sin_fines": "on",
+            "region": "13", "presupuesto": "45000", "calendario_presentado": "1",
+            "dias": ["2026-01-01"],
+        })
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertEqual(respuesta.context["cantidad_dias"], 21)
+        self.assertEqual(respuesta.context["cantidad_comidas"], 63)
+        self.assertEqual(respuesta.context["form"]["presupuesto"].value(), "45000")
+        self.assertEqual(respuesta.context["form"]["region"].value(), "13")
+        self.assertFalse(respuesta.context["form"].errors)
+        self.assertEqual(self.plan(), anterior)
+
+    def test_revisar_dias_invalidos_muestra_error_sin_modificar_plan(self):
+        anterior = self.plan()
+        respuesta = self.client.post("/", {"accion": "revisar_dias", "modo": "mes", "mes": "2028-99", "presupuesto": "45000"})
+        self.assertTrue(respuesta.context["periodo_form"].errors)
+        self.assertEqual(respuesta.context["cantidad_dias"], 0)
+        self.assertEqual(self.plan(), anterior)
+
     def test_editar_una_comida_no_cambia_las_otras_ni_receta_original(self):
         antes = self.plan()
         self.client.post("/plan/", {"accion": "confirmar", "plan_id": antes["id"]})

@@ -1,25 +1,31 @@
 {% extends "web/base.html" %}
 {% block title %}Mis productos | EatWell{% endblock %}
+{% block page_class %}page-products{% endblock %}
 {% block content %}
-<section class="panel">
+<section class="panel page-intro">
+    <p class="eyebrow">Tu despensa personal</p>
     <h1>Mis productos</h1>
     <p>Estos productos son privados de tu cuenta. Puedes usarlos al crear tus recetas.</p>
-    <p><a href="{% url 'producto_nuevo' %}">Agregar producto</a> · <a href="{% url 'receta_nueva' %}">Crear receta</a></p>
-    <form method="get"><label><input type="checkbox" name="favoritos" value="on" {% if request.GET.favoritos %}checked{% endif %}> ★ Solo favoritos</label><button type="submit" class="secondary">Filtrar</button></form>
+    <div class="actions"><a class="button" href="{% url 'producto_nuevo' %}">Agregar producto</a><a class="button secondary" href="{% url 'receta_nueva' %}">Crear receta</a></div>
+    <form class="inline-filter" method="get"><label class="check-label"><input type="checkbox" name="favoritos" value="on" {% if request.GET.favoritos %}checked{% endif %}> <span>★ Solo favoritos</span></label><button type="submit" class="button secondary">Filtrar</button></form>
     <p class="help">Agregar un producto no lo añade a todas las comidas: primero inclúyelo en una receta.
         Los cambios de precio se aplican al generar un nuevo plan.</p>
 </section>
+<div class="catalog-grid product-grid">
 {% for producto in pagina %}
-    <article class="panel">
+    <article class="panel catalog-card product-card">
+        <div class="card-heading">
         <h2>{{ producto.nombre }}</h2>
         {% include "web/favorito.html" with item=producto tipo="producto" %}
+        </div>
         {% if producto.foto %}<img class="product-photo" src="{% url 'producto_foto' producto.pk %}" alt="Foto de {{ producto.nombre }}" loading="lazy">{% endif %}
-        <p>{{ producto.cantidad_referencia }} {{ producto.unidad }} por $ {{ producto.precio_referencia|floatformat:"-2gu" }} CLP.</p>
-        {% if producto.propiedades %}<p>{{ producto.propiedades|linebreaksbr }}</p>{% endif %}
-        <a href="{% url 'producto_editar' producto.pk %}">Editar producto</a>
+        <p class="product-price">{{ producto.cantidad_referencia }} {{ producto.unidad }} por $ {{ producto.precio_referencia|floatformat:"-2gu" }} CLP.</p>
+        {% if producto.propiedades %}<p class="product-notes">{{ producto.propiedades|linebreaksbr }}</p>{% endif %}
+        <div class="card-actions"><a class="text-link" href="{% url 'producto_editar' producto.pk %}">Editar producto →</a></div>
     </article>
 {% empty %}
-    <p>Todavía no has agregado productos.</p>
+    <div class="empty-state"><h2>No hay productos para mostrar</h2><p>Agrega tu primer producto o desactiva el filtro de favoritos.</p><a class="button secondary" href="{% url 'producto_nuevo' %}">Agregar producto</a></div>
 {% endfor %}
+</div>
 {% include "web/paginacion.html" %}
 {% endblock %}

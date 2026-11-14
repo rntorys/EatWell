@@ -51,15 +51,19 @@ def home(request):
     if guardado is not None:
         datos_periodo.update(guardado.datos.get("periodo", {}))
     entrada = request.POST if request.method == "POST" else request.GET
+    revisar_dias = request.method == "POST" and entrada.get("accion") == "revisar_dias"
     if "modo" in entrada:
         datos_periodo = entrada
     periodo_form = PeriodoForm(datos_periodo)
-    seleccion = entrada if request.method == "POST" else None
+    seleccion = entrada if request.method == "POST" and not revisar_dias else None
     if request.method == "GET" and "modo" not in entrada and guardado is not None and guardado.datos.get("periodo"):
         seleccion = QueryDict("calendario_presentado=1", mutable=True)
         seleccion.setlist("dias", [dia["fecha"] for dia in guardado.datos["menu"] if "fecha" in dia])
     calendario, dias = seleccionar_fechas(periodo_form, seleccion)
-    if request.method == "POST":
+    if revisar_dias:
+        # Alternativa sin JavaScript: actualiza el calendario sin generar un plan.
+        form = PresupuestoForm(initial={"region": entrada.get("region", "13"), "presupuesto": entrada.get("presupuesto", "")})
+    elif request.method == "POST":
         form = PresupuestoForm(request.POST)
         if form.is_valid() and periodo_form.is_valid():
             presupuesto = form.cleaned_data["presupuesto"]
@@ -112,6 +116,10 @@ def home(request):
         "periodo_form": periodo_form,
         "calendario": calendario,
         "cantidad_comidas": len(dias) * 3,
+        "cantidad_dias": len(dias),
+        "revisar_dias": revisar_dias,
+        "resumen_desde": dias[0]["dia"] if dias else "",
+        "resumen_hasta": dias[-1]["dia"] if dias else "",
     })
 
 

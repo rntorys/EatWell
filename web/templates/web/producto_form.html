@@ -1,15 +1,17 @@
 {% extends "web/base.html" %}
 {% block title %}Producto personal | EatWell{% endblock %}
+{% block page_class %}page-product-form{% endblock %}
 {% block content %}
-<section class="panel form-panel">
+<section class="panel form-panel product-editor">
+    <p class="eyebrow">Tu despensa personal</p>
     <h1>{% if producto %}Editar producto{% else %}Agregar producto{% endif %}</h1>
     <p>Ingresa el precio de la cantidad que compras. Por ejemplo: 500 g por $1.500.</p>
-    <form method="post" enctype="multipart/form-data">
+    <form class="product-form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% include "web/campos_formulario.html" %}
         {% if producto.foto %}<img class="product-photo" src="{% url 'producto_foto' producto.pk %}" alt="Foto actual">{% endif %}
-        <button type="submit">Guardar producto</button>
-        <a href="{% url 'productos' %}">Volver</a>
+        <div class="form-actions"><button class="button" type="submit">Guardar producto</button>
+        <a class="button secondary" href="{% url 'productos' %}">Volver</a></div>
     </form>
 </section>
 {% endblock %}

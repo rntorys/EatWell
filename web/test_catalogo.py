@@ -17,8 +17,9 @@ from .test_odepa import ejemplo
 
 
 class RecetasAmpliadasTests(SimpleTestCase):
-    def test_35_recetas_validas_y_con_variedad_en_cada_tipo(self):
-        self.assertEqual(len(RECETAS), 35)
+    def test_recetas_validas_y_con_variedad_en_cada_tipo(self):
+        # Permite ampliar el catálogo conservando al menos las 35 recetas iniciales.
+        self.assertGreaterEqual(len(RECETAS), 35)
         nombres = set()
         for tipo in ["desayuno", "almuerzo", "cena"]:
             cantidad = 0
@@ -228,7 +229,7 @@ class CatalogoPersonalTests(TestCase):
         self.assertContains(respuesta, 'list="ingredientes-disponibles"')
         self.assertContains(respuesta, 'name="ingredientes-TOTAL_FORMS"')
         self.assertEqual(respuesta.context["filas"].total_form_count(), 12)
-        self.assertEqual(self.client.get("/recetas/").context["pagina"].paginator.count, 35)
+        self.assertEqual(self.client.get("/recetas/").context["pagina"].paginator.count, len(RECETAS))
         self.client.logout()
         for ruta in ["/productos/", "/productos/nuevo/", "/recetas/", "/recetas/nueva/"]:
             self.assertEqual(self.client.get(ruta).status_code, 302)

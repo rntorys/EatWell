@@ -1,10 +1,12 @@
 {% extends "web/base.html" %}
 {% block title %}Mi receta | EatWell{% endblock %}
+{% block page_class %}page-recipe-form{% endblock %}
 {% block content %}
-<section class="panel form-panel">
+<section class="panel form-panel recipe-editor-intro">
+    <p class="eyebrow">Cocina a tu gusto</p>
     <h1>{% if receta %}Editar mi receta{% else %}Crear mi receta{% endif %}</h1>
     <p>Primero elige la región para cargar los ingredientes disponibles.</p>
-    <form method="get">{{ region_form.as_p }}<button type="submit" class="secondary">Cargar ingredientes de la región</button></form>
+    <form class="region-form" method="get">{% include "web/campos_formulario.html" with form=region_form %}<button type="submit" class="button secondary">Cargar ingredientes de la región</button></form>
     <p class="help">Cambiar de región recarga esta página. Hazlo antes de completar la receta.</p>
     <p><a href="{% url 'producto_nuevo' %}" target="_blank" rel="noopener">Agregar un producto propio en otra pestaña</a>.
         Después, vuelve a cargar los ingredientes antes de escribir la receta.</p>
@@ -13,11 +15,11 @@
 {% if faltantes %}<p class="notice">Algunos ingredientes guardados no están disponibles en esta región.
     Puedes elegir otra región o reemplazarlos antes de guardar.</p>{% endif %}
 {% include "web/selector_favoritos.html" with region=region_form.region.value %}
-<section class="panel form-panel">
-    <form method="post">
+<section class="panel form-panel recipe-editor">
+    <form class="recipe-form" method="post">
         {% csrf_token %}
         <input type="hidden" name="region" value="{{ region_form.region.value }}">
-        {{ form.as_p }}
+        {% include "web/campos_formulario.html" %}
         <h2>Ingredientes para una porción</h2>
         <p>Escribe un nombre y selecciona una sugerencia. La unidad aparece entre paréntesis.
             Puedes usar hasta 12 ingredientes distintos; deja vacíos los que no necesites.</p>
@@ -29,11 +31,11 @@
         {% for fila in filas %}
             <details class="ingredient-row" {% if forloop.counter < 4 or fila.has_changed or fila.errors %}open{% endif %}>
                 <summary>Ingrediente {{ forloop.counter }}</summary>
-                {{ fila.as_p }}
+                {% include "web/campos_formulario.html" with form=fila %}
             </details>
         {% endfor %}
-        <button type="submit">Guardar receta</button>
-        <a href="{% url 'recetas' %}">Volver</a>
+        <div class="form-actions"><button class="button" type="submit">Guardar receta</button>
+        <a class="button secondary" href="{% url 'recetas' %}">Volver</a></div>
     </form>
 </section>
 {% endblock %}

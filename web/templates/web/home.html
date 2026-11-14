@@ -1,76 +1,95 @@
 {% extends "web/base.html" %}
-
+{% load static %}
 {% block title %}Planifica tus comidas | EatWell{% endblock %}
+{% block page_class %}page-home{% endblock %}
 
 {% block content %}
-<section class="panel form-panel" aria-labelledby="titulo-inicio">
+<section class="panel form-panel planner-panel" aria-labelledby="titulo-inicio">
+    <p class="eyebrow">Tu presupuesto, tu menú</p>
     <h1 id="titulo-inicio">Planifica tus comidas</h1>
-    <p>Ingresa tu presupuesto para generar un menú y su lista de compras.</p>
-    <p><strong>Una persona · Desayuno, almuerzo y cena en cada día que elijas</strong></p>
-    {% if tiene_plan %}
-        <p><a href="{% url 'plan' %}">Ver mi plan guardado</a>.</p>
-        <p class="help">Tu plan actual se reemplazará cuando generes otro válido.
-            Si el nuevo monto no alcanza, conservaremos el anterior.</p>
-    {% endif %}
+    <p>Cuéntanos cuánto puedes gastar y para cuántos días. Nosotros armamos el menú y las compras.</p>
+    <p class="help">Para una persona, con desayuno, almuerzo y cena.</p>
+    {% if tiene_plan %}<p class="saved-plan-link"><a href="{% url 'plan' %}">Ver mi plan guardado →</a></p>{% endif %}
 
     {% if sin_plan %}
         <div class="notice" role="alert">
             <h2>No encontramos un plan con ese presupuesto</h2>
             <p>Ajusta el monto e inténtalo nuevamente.</p>
             {% if presupuesto_minimo is not None %}
-                <p>Con las recetas actuales, el mínimo estimado para cubrir las
-                    {{ cantidad_comidas }} comidas es <strong>$ {{ presupuesto_minimo|floatformat:"-2gu" }} CLP</strong>,
-                    repitiendo las opciones más económicas.</p>
-            {% else %}
-                <p>Faltan recetas en el catálogo para cubrir todas las comidas.</p>
-            {% endif %}
+                <p>El mínimo estimado para las {{ cantidad_comidas }} comidas es
+                    <strong>$ {{ presupuesto_minimo|floatformat:"-2gu" }} CLP</strong>, repitiendo las recetas más económicas.</p>
+            {% else %}<p>Faltan recetas en el catálogo para cubrir todas las comidas.</p>{% endif %}
         </div>
     {% endif %}
 
-    {% if info_precios %}
-        {% include "web/info_precios.html" %}
-    {% endif %}
-    <h2>1. Elige el período</h2>
-    <form method="get" action="{% url 'home' %}">
-        {{ periodo_form.as_p }}
-        <button type="submit" class="secondary">Mostrar días del período</button>
-    </form>
-    <p class="help">Un mes incluye automáticamente sus 28, 29, 30 o 31 días.
-        Elige el período antes de completar el presupuesto.</p>
-    <h2>2. Selecciona los días y el presupuesto total</h2>
-    <form method="post" action="{% url 'home' %}">
+    <form class="budget-form simple-planner" id="planificador" method="post" action="{% url 'home' %}">
         {% csrf_token %}
-        <input type="hidden" name="modo" value="{{ periodo_form.modo.value }}">
-        <input type="hidden" name="inicio" value="{{ periodo_form.inicio.value|default:'' }}">
-        <input type="hidden" name="mes" value="{{ periodo_form.mes.value|default:'' }}">
-        {% if periodo_form.sin_fines.value %}<input type="hidden" name="sin_fines" value="on">{% endif %}
-        <input type="hidden" name="calendario_presentado" value="1">
-        <fieldset><legend>Días que quieres cubrir</legend>
-            <div class="calendar-days">
-                {% for dia in calendario %}
-                    <label><input type="checkbox" name="dias" value="{{ dia.valor }}" {% if dia.marcado %}checked{% endif %}> {{ dia.etiqueta }}</label>
-                {% endfor %}
-            </div>
-        </fieldset>
-        <p class="help">Desmarca las fechas que no necesites. Debe quedar al menos un día.
-            El presupuesto es para todo el período, no se multiplica por semana.</p>
         {{ form.non_field_errors }}
-        <label for="{{ form.region.id_for_label }}">{{ form.region.label }}</label>
-        {{ form.region }}
-        {{ form.region.errors }}
-        <p class="help">Elige tu región. Se muestran las regiones cubiertas por ODEPA;
-            no usamos precios de otra región si la tuya no está disponible.</p>
-        <label for="{{ form.presupuesto.id_for_label }}">{{ form.presupuesto.label }}</label>
-        <p class="help" id="ayuda-presupuesto">Ingresa un monto mayor que 0, sin separador de miles. Puedes usar hasta dos decimales.</p>
-        {{ form.presupuesto }}
-        {% if form.presupuesto.errors %}
-            <div role="alert">{{ form.presupuesto.errors }}</div>
-        {% endif %}
-        <button type="submit">Generar planificación</button>
+        {{ periodo_form.non_field_errors }}
+        <div class="form-grid">
+            <div class="form-field">
+                <label class="field-label" for="{{ form.presupuesto.id_for_label }}">¿Cuánto puedes gastar en total?</label>
+                {{ form.presupuesto }}
+                <p class="help" id="ayuda-presupuesto">Pesos chilenos, para todo el período. Ejemplo: 25000.</p>
+                {{ form.presupuesto.errors }}
+            </div>
+            <div class="form-field">
+                <label class="field-label" for="{{ form.region.id_for_label }}">¿En qué región compras?</label>
+                {{ form.region }}
+                {{ form.region.errors }}
+            </div>
+            <div class="form-field">
+                <label class="field-label" for="{{ periodo_form.modo.id_for_label }}">¿Para cuánto tiempo?</label>
+                {{ periodo_form.modo }}
+                {{ periodo_form.modo.errors }}
+            </div>
+            <div class="form-field" id="campo-inicio">
+                {{ periodo_form.inicio.label_tag }}
+                {{ periodo_form.inicio }}
+                {{ periodo_form.inicio.errors }}
+            </div>
+            <div class="form-field" id="campo-mes">
+                {{ periodo_form.mes.label_tag }}
+                {{ periodo_form.mes }}
+                {{ periodo_form.mes.errors }}
+            </div>
+        </div>
+
+        <details class="disclosure planner-customization" {% if periodo_form.errors or revisar_dias %}open{% endif %}>
+            <summary>Personalizar días <span class="optional-label">(opcional)</span></summary>
+            <label class="check-label" for="{{ periodo_form.sin_fines.id_for_label }}">{{ periodo_form.sin_fines }} <span>Excluir sábados y domingos</span></label>
+            {{ periodo_form.sin_fines.errors }}
+            <noscript>
+                <p class="help">Si cambias el período, la fecha o los fines de semana, actualiza los días antes de elegir fechas concretas.</p>
+                <button class="button secondary" type="submit" name="accion" value="revisar_dias" formnovalidate>Actualizar días</button>
+            </noscript>
+            <fieldset class="calendar-fieldset">
+                <legend>Desmarca los días que no necesites</legend>
+                <input type="hidden" name="calendario_presentado" value="1">
+                <div class="calendar-days" id="dias-plan">
+                    {% for dia in calendario %}
+                        <label class="calendar-day"><input class="calendar-checkbox" type="checkbox" name="dias" value="{{ dia.valor }}" {% if dia.marcado %}checked{% endif %}> <span>{{ dia.etiqueta }}</span></label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            <p class="help">Debe quedar al menos un día. Cambiar el período vuelve a seleccionar todas sus fechas disponibles.</p>
+        </details>
+
+        <div class="planner-overview" role="status" aria-live="polite" aria-atomic="true">
+            <strong id="resumen-dias">{{ cantidad_dias }} días · {{ cantidad_comidas }} comidas</strong>
+            <span id="resumen-fechas" class="help">{% if cantidad_dias %}Del {{ resumen_desde }} al {{ resumen_hasta }}{% endif %}</span>
+        </div>
+        <p class="planner-error" id="error-calendario" role="alert" hidden></p>
+        <div class="form-actions"><button class="button" id="generar-plan" type="submit">Generar planificación</button></div>
     </form>
-    <p class="help">El menú puede repetir recetas para ajustarse al presupuesto.</p>
-    <p class="help">También considera tus recetas personales. Puedes crearlas en <a href="{% url 'recetas' %}">Recetas</a>
-        usando ingredientes existentes o tus propios productos.</p>
-    <p class="help">Después de generar la propuesta puedes cambiar sus comidas e ingredientes antes de confirmarla.</p>
+
+    <details class="planner-help">
+        <summary>¿Cómo se arma mi plan?</summary>
+        <p class="help">Usamos precios de tu región y recetas del catálogo, incluidas las que creaste.
+            El menú puede repetir comidas para ajustarse al presupuesto. Después puedes editarlo antes de confirmar.</p>
+        {% if tiene_plan %}<p class="help">Tu plan guardado solo se reemplaza cuando generas otro válido.</p>{% endif %}
+        {% if info_precios %}{% include "web/info_precios.html" %}{% endif %}
+    </details>
 </section>
 {% endblock %}
+{% block scripts %}<script src="{% static 'web/js/planificador.js' %}" defer></script>{% endblock %}

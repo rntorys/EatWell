@@ -1,17 +1,19 @@
 {% extends "web/base.html" %}
 
 {% block title %}Iniciar sesión | EatWell{% endblock %}
+{% block page_class %}page-auth{% endblock %}
 
 {% block content %}
-<section class="panel form-panel" aria-labelledby="titulo-login">
+<section class="panel form-panel auth-panel" aria-labelledby="titulo-login">
+    <p class="eyebrow">Bienvenido a EatWell</p>
     <h1 id="titulo-login">Iniciar sesión</h1>
     <p>Entra a tu cuenta para consultar tu plan y tu lista de compras.</p>
-    <form method="post" action="{% url 'login' %}">
+    <form class="auth-form" method="post" action="{% url 'login' %}">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% include "web/campos_formulario.html" %}
         <input type="hidden" name="next" value="{{ next }}">
-        <button type="submit">Ingresar</button>
+        <button class="button" type="submit">Ingresar</button>
     </form>
-    <p>¿No tienes cuenta? <a href="{% url 'registro' %}">Crear una cuenta</a>.</p>
+    <p class="auth-switch">¿No tienes cuenta? <a href="{% url 'registro' %}">Crear una cuenta</a>.</p>
 </section>
 {% endblock %}

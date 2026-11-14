@@ -2,12 +2,17 @@
 
 ## Elegir los días
 
-En Planificar hay dos pasos:
+En Planificar ingresa tu presupuesto total, la región, la duración y la fecha.
+La opción inicial cubre una semana. Puedes generar la propuesta directamente.
 
-1. Elige 7, 28, 30 o 31 días desde una fecha inicial, o un mes completo.
-   Puedes excluir sábados y domingos. Pulsa **Mostrar días del período**.
-2. Desmarca las fechas que no necesitas, elige región e ingresa el presupuesto
-   total para los días que quedaron seleccionados. Genera la propuesta.
+Para excluir fines de semana o desmarcar fechas concretas, abre **Personalizar días**.
+El calendario se actualiza al cambiar la duración, el mes o la fecha, conservando
+el presupuesto y la región que ya escribiste. Un resumen muestra los días y comidas
+seleccionados. Cambiar el período vuelve a marcar todas sus fechas disponibles.
+
+Sin JavaScript, los campos de fecha y mes se muestran juntos. Usa **Actualizar días**
+dentro de Personalizar días después de cambiar el período y antes de elegir fechas
+concretas. Este botón conserva el presupuesto y no reemplaza el plan guardado.
 
 Febrero tiene 28 o 29 días según el año. Los otros meses incluyen sus 30 o 31
 días automáticamente. Debes seleccionar al menos un día. La opción de excluir
@@ -88,6 +93,8 @@ formularios; marcar una mientras editas recarga la página y puede perder el bor
 - `web/models.py`: tabla `Favorito`, única por usuario, tipo y producto o receta.
 - `web/views_favoritos.py`: valida y guarda estrellas mediante POST con CSRF.
 - `web/static/web/js/favoritos.js`: interacción de estrellas y filtros.
+- `web/static/web/js/planificador.js`: muestra el campo de fecha necesario y actualiza
+  el calendario y su resumen. Python sigue validando las fechas y calculando los costos.
 - `web/test_planes_editables.py`: pruebas de meses bisiestos, fechas, edición,
   compras, límites de presupuesto, privacidad, favoritos y formularios antiguos.
 

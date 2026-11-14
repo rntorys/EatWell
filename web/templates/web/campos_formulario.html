@@ -1,0 +1,18 @@
+{% comment %}Clases compartidas para los formularios de Django, sin cambiar su validación.{% endcomment %}
+{{ form.non_field_errors }}
+{% for campo in form %}
+    {% if campo.is_hidden %}
+        {{ campo }}{{ campo.errors }}
+    {% else %}
+        <div class="form-field {% if campo.field.widget.input_type == 'checkbox' %}form-field-check{% endif %}{% if campo.errors %} has-error{% endif %}">
+            {% if campo.field.widget.input_type == 'checkbox' %}
+                <label class="check-label" for="{{ campo.id_for_label }}">{{ campo }} <span>{{ campo.label }}</span></label>
+            {% else %}
+                <label class="field-label" for="{{ campo.id_for_label }}">{{ campo.label }}{% if campo.field.required %}<span class="required-mark" aria-hidden="true"> *</span>{% endif %}</label>
+                {{ campo }}
+            {% endif %}
+            {% if campo.help_text %}<div class="helptext" id="{{ campo.auto_id }}_helptext">{{ campo.help_text|safe }}</div>{% endif %}
+            {{ campo.errors }}
+        </div>
+    {% endif %}
+{% endfor %}

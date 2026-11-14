@@ -1,13 +1,13 @@
 <details class="panel favorite-picker" data-lista="ingredientes-disponibles">
     <summary>☆ Buscar y marcar ingredientes favoritos</summary>
-    <label>Buscar ingrediente <input type="search" class="favorite-search" placeholder="Escribe un nombre"></label>
-    <label><input type="checkbox" class="favorite-only"> ★ Mostrar solo favoritos en las sugerencias</label>
+    <label class="field-label">Buscar ingrediente <input type="search" class="favorite-search" placeholder="Escribe un nombre"></label>
+    <label class="check-label"><input type="checkbox" class="favorite-only"> <span>★ Mostrar solo favoritos en las sugerencias</span></label>
     <p class="help">Marca con la estrella. Después, busca el ingrediente en la fila que quieras completar.
         Tus favoritos aparecen primero; no se añaden solos a la comida.</p>
     <div class="favorite-items">
         {% for item in selector_productos %}
             <div class="favorite-item" data-clave="{{ item.clave }}" data-favorito="{% if item.favorito %}1{% else %}0{% endif %}">
-                <span>{{ item.etiqueta }}</span>
+                <span class="favorite-item-name">{{ item.etiqueta }}</span>
                 {% include "web/favorito.html" with tipo="producto" region=region %}
             </div>
         {% endfor %}

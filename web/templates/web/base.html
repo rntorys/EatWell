@@ -6,39 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}EatWell{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'web/css/styles.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'web/img/eatwell-logo.png' %}">
 </head>
-<body>
+<body class="site-body {% block page_class %}{% endblock %}">
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <header class="site-header">
-        <a class="brand" href="{% url 'home' %}">EatWell</a>
-        <p>Come mejor, gastando menos.</p>
-        <nav class="account-nav" aria-label="Cuenta">
+        <div class="header-inner">
+            <div class="brand-group">
+                <a class="brand" href="{% url 'home' %}"><span class="brand-mark" aria-hidden="true"><img class="brand-logo" src="{% static 'web/img/eatwell-logo.png' %}" alt="" width="40" height="40"></span>EatWell</a>
+                <p class="brand-tagline">Come mejor, gastando menos.</p>
+            </div>
             {% if user.is_authenticated %}
-                <span>Hola, {{ user.username }}</span>
-                <a href="{% url 'home' %}">Planificar</a>
-                <a href="{% url 'plan' %}">Mi plan</a>
-                <a href="{% url 'precios' %}">Precios por región</a>
-                <a href="{% url 'productos' %}">Mis productos</a>
-                <a href="{% url 'recetas' %}">Recetas</a>
-                <form method="post" action="{% url 'logout' %}">
+            <div class="account-area">
+                <span class="account-greeting">Hola, {{ user.username }}</span>
+                <form class="logout-form" method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
-                    <button type="submit" class="secondary">Cerrar sesión</button>
+                    <button type="submit" class="button header-button">Cerrar sesión</button>
                 </form>
-            {% else %}
-                <a href="{% url 'login' %}">Iniciar sesión</a>
-                <a href="{% url 'registro' %}">Crear cuenta</a>
+            </div>
             {% endif %}
+        </div>
+        <nav class="account-nav" aria-label="Navegación principal">
+            {% with pagina_actual=request.resolver_match.url_name %}
+            {% if user.is_authenticated %}
+                <a class="nav-link" href="{% url 'home' %}" {% if pagina_actual == 'home' %}aria-current="page"{% endif %}>Planificar</a>
+                <a class="nav-link" href="{% url 'plan' %}" {% if pagina_actual == 'plan' or pagina_actual == 'editar_comida' or pagina_actual == 'editar_producto_plan' %}aria-current="page"{% endif %}>Mi plan</a>
+                <a class="nav-link" href="{% url 'precios' %}" {% if pagina_actual == 'precios' %}aria-current="page"{% endif %}>Precios por región</a>
+                <a class="nav-link" href="{% url 'productos' %}" {% if pagina_actual == 'productos' or pagina_actual == 'producto_nuevo' or pagina_actual == 'producto_editar' %}aria-current="page"{% endif %}>Mis productos</a>
+                <a class="nav-link" href="{% url 'recetas' %}" {% if pagina_actual == 'recetas' or pagina_actual == 'receta_nueva' or pagina_actual == 'receta_editar' %}aria-current="page"{% endif %}>Recetas</a>
+            {% else %}
+                <a class="nav-link" href="{% url 'login' %}" {% if pagina_actual == 'login' %}aria-current="page"{% endif %}>Iniciar sesión</a>
+                <a class="nav-link" href="{% url 'registro' %}" {% if pagina_actual == 'registro' %}aria-current="page"{% endif %}>Crear cuenta</a>
+            {% endif %}
+            {% endwith %}
         </nav>
     </header>
-    <main>
+    <main class="site-main" id="contenido">
         {% if error %}
             <div class="notice" role="alert">{{ error }}</div>
         {% endif %}
         {% block content %}{% endblock %}
     </main>
-    <footer>
-        <p>Precios referenciales en pesos chilenos (CLP). No garantizan el precio de una tienda.</p>
-        <p>El costo estima las cantidades utilizadas, no la compra de envases completos.</p>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p class="footer-brand">EatWell <span>· Planifica a tu medida</span></p>
+            <p class="footer-note">Precios referenciales en pesos chilenos (CLP). No garantizan el precio de una tienda.</p>
+            <p class="footer-note">El costo estima las cantidades utilizadas, no la compra de envases completos.</p>
+        </div>
     </footer>
 <script src="{% static 'web/js/favoritos.js' %}" defer></script>
+{% block scripts %}{% endblock %}
 </body>
 </html>
