@@ -1,18 +1,17 @@
-
-
-/* EatWell: primera propuesta de diseño.
-   Cambia los colores aquí. Las secciones siguen el orden de la página. */
+/* EatWell: segunda propuesta de diseño (Martín).
+   Base compartida, mejoras para computador y celular, y movimiento suave. */
 :root {
-    --green: #256347;
-    --green-dark: #183f31;
-    --green-light: #edf5ef;
-    --background: #f6f7f2;
+    --green: #256b50;
+    --green-dark: #153e30;
+    --green-light: #edf6ef;
+    --background: #f6f8f2;
     --text: #24392e;
     --muted: #607066;
     --border: #dce5dc;
     --accent: #e8bd76;
     --danger: #a33636;
-    --radius: 14px;
+    --radius: 18px;
+    --shadow: 0 8px 30px #153e300a;
 }
 
 /* Base y textos */
@@ -21,7 +20,7 @@
 }
 body {
     margin: 0;
-    background: var(--background);
+    background: radial-gradient(ellipse at top left, #e4efdd 0, transparent 45%), var(--background);
     color: var(--text);
     font-family: "Segoe UI", Arial, sans-serif;
     font-size: 16px;
@@ -108,12 +107,13 @@ img {
 
 /* Encabezado, cuenta y navegación */
 .site-header {
-    background: var(--green-dark);
+    background: linear-gradient(115deg, #153e30, #245d45);
     color: white;
-    border-bottom: 4px solid var(--accent);
+    border-bottom: 3px solid var(--accent);
+    box-shadow: 0 5px 24px #153e3014;
 }
 .header-inner, .account-nav, .site-main, .footer-inner {
-    width: min(1180px, 100%);
+    width: min(1280px, 100%);
     margin: 0 auto;
 }
 .header-inner {
@@ -126,9 +126,9 @@ img {
 .brand {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     color: white;
-    font-size: 29px;
+    font-size: 31px;
     font-weight: 750;
     text-decoration: none;
     letter-spacing: -1px;
@@ -140,13 +140,22 @@ img {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 14px 14px 14px 4px;
-    background: var(--accent);
+    width: 54px;
+    height: 54px;
+    padding: 7px;
+    border-radius: 18px 18px 18px 6px;
+    background: #fffbef;
     color: var(--green-dark);
     font-size: 16px;
     letter-spacing: -0.5px;
+    box-shadow: 0 4px 12px #08231826;
+    flex-shrink: 0;
+}
+.brand-logo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 .brand-tagline {
     margin: 6px 0 0;
@@ -181,6 +190,8 @@ img {
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
+    border: 1px solid transparent;
+    transition: background-color 180ms ease, border-color 180ms ease;
 }
 .nav-link:hover {
     background: #2c5140;
@@ -189,6 +200,7 @@ img {
 .nav-link[aria-current="page"] {
     background: #eff5e9;
     color: var(--green-dark);
+    box-shadow: 0 3px 10px #08231812;
 }
 
 /* Contenedores y secciones */
@@ -202,7 +214,7 @@ img {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: white;
-    box-shadow: 0 4px 18px #183f3106;
+    box-shadow: var(--shadow);
     min-width: 0;
 }
 .panel > :last-child {
@@ -214,7 +226,8 @@ img {
     margin-right: auto;
 }
 .page-intro {
-    border-top: 4px solid var(--green);
+    border-top: 0;
+    border-left: 5px solid var(--green);
 }
 .plan-scope {
     padding: 12px 16px;
@@ -260,6 +273,23 @@ img {
 .simple-planner {
     margin-top: 26px;
 }
+.planner-panel {
+    max-width: 900px;
+    border-top: 4px solid var(--green);
+    padding: 38px;
+}
+.planner-panel h1 {
+    font-size: clamp(28px, 3.4vw, 40px);
+}
+.planner-panel > .eyebrow {
+    display: inline-block;
+    padding: 5px 11px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    background: #f8efd9;
+    color: #70501c;
+    font-size: 11px;
+}
 .simple-planner .help {
     margin: 7px 0 0;
     font-size: 13px;
@@ -284,6 +314,8 @@ img {
     border-radius: 9px;
     background: var(--green-light);
     color: var(--green-dark);
+    border: 1px solid #cde2d1;
+    border-left: 4px solid var(--green);
 }
 .simple-planner .form-actions > button {
     width: 100%;
@@ -322,10 +354,10 @@ button, .button {
     justify-content: center;
     align-items: center;
     gap: 8px;
-    min-height: 44px;
+    min-height: 46px;
     padding: 11px 20px;
     border: 1px solid var(--green);
-    border-radius: 8px;
+    border-radius: 10px;
     background: var(--green);
     color: white;
     font: inherit;
@@ -335,7 +367,7 @@ button, .button {
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.15s, border-color 0.15s;
+    transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 button:hover, .button:hover {
     background: var(--green-dark);
@@ -409,7 +441,7 @@ input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, t
     display: block;
     width: 100%;
     min-width: 0;
-    min-height: 46px;
+    min-height: 48px;
     padding: 11px 13px;
     margin: 7px 0 0;
     border: 1px solid #b8c9bd;
@@ -418,6 +450,7 @@ input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, t
     color: var(--text);
     font: inherit;
     font-size: 15px;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
 }
 input::placeholder, textarea::placeholder {
     color: #77847c;
@@ -428,6 +461,7 @@ input:hover, select:hover, textarea:hover {
 }
 input:focus, select:focus, textarea:focus {
     border-color: var(--green);
+    box-shadow: 0 0 0 3px #256b5014;
 }
 textarea {
     min-height: 110px;
@@ -552,6 +586,8 @@ input[type="checkbox"], input[type="radio"] {
     font-size: 13px;
     font-weight: 400;
     cursor: pointer;
+    min-height: 44px;
+    transition: border-color 160ms ease, background-color 160ms ease;
 }
 .calendar-day:has(input:checked) {
     border-color: #a4c5ae;
@@ -637,8 +673,8 @@ details[open] > summary {
     flex-shrink: 0;
 }
 .favorite-button {
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 3px 9px;
     border-color: #e3ddcb;
     background: #fffdf7;
@@ -668,6 +704,9 @@ details[open] > summary {
 }
 .catalog-card {
     margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
 }
 .card-heading {
     display: flex;
@@ -684,15 +723,15 @@ details[open] > summary {
     flex-direction: column;
 }
 .card-actions {
-    margin-top: 22px;
     padding-top: 16px;
     border-top: 1px solid var(--border);
     font-size: 14px;
+    margin-top: auto;
 }
 .product-photo {
     display: block;
-    width: 160px;
-    height: 160px;
+    width: 100%;
+    height: 180px;
     margin: 16px 0;
     padding: 8px;
     object-fit: contain;
@@ -730,6 +769,7 @@ details[open] > summary {
     margin-left: auto;
     color: var(--green-dark);
     font-size: 16px;
+    white-space: nowrap;
 }
 .personal-recipe {
     font-size: 13px;
@@ -768,6 +808,7 @@ details[open] > summary {
     border: 1px solid var(--border);
     border-radius: 10px;
     background: #f8faf6;
+    border-top: 3px solid #cbdccd;
 }
 .summary dt {
     color: var(--muted);
@@ -781,7 +822,7 @@ details[open] > summary {
     overflow-wrap: anywhere;
 }
 .summary-cost {
-    background: var(--green-dark);
+    background: linear-gradient(135deg, #153e30, #256b50);
     border-color: var(--green-dark);
     color: white;
 }
@@ -800,7 +841,7 @@ details[open] > summary {
     width: 100%;
     overflow-x: auto;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 12px;
     margin-top: 20px;
 }
 .table-hint {
@@ -866,6 +907,9 @@ tfoot th, tfoot td {
 .meal-table tbody th {
     background: #fafbf8;
     font-size: 13px;
+    position: sticky;
+    left: 0;
+    z-index: 1;
 }
 .meal-name {
     display: block;
@@ -883,6 +927,17 @@ tfoot th, tfoot td {
     margin-top: 12px;
     font-size: 12px;
     font-weight: 600;
+    width: fit-content;
+    padding: 7px 10px;
+    margin-left: -3px;
+    border: 1px solid #d2e1d6;
+    border-radius: 7px;
+    background: #f3f8f1;
+    text-decoration: none;
+}
+.meal-edit-link:hover, .product-edit-link:hover {
+    background: #e4f0e5;
+    border-color: #98bca3;
 }
 .edited-badge {
     margin-top: 8px;
@@ -962,7 +1017,7 @@ tfoot th, tfoot td {
     padding: 14px 0;
 }
 .pagination a {
-    padding: 8px 13px;
+    padding: 10px 15px;
     border: 1px solid var(--border);
     border-radius: 7px;
     background: white;
@@ -982,7 +1037,7 @@ tfoot th, tfoot td {
 }
 .site-footer {
     border-top: 1px solid var(--border);
-    background: #ecf0e8;
+    background: #eaf0e5;
 }
 .footer-inner {
     padding: 26px 32px;
@@ -1150,8 +1205,297 @@ tfoot th, tfoot td {
         width: 100%;
     }
 }
+/* Más espacio útil en monitores amplios. */
+@media (min-width: 1200px) {
+    .catalog-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .filter-form {
+        grid-template-columns: minmax(200px, 1fr) minmax(260px, 1.4fr) minmax(150px, 0.7fr);
+        align-items: end;
+    }
+    .summary-item {
+        padding: 24px;
+    }
+}
+
+/* En celular el menú y las compras pasan de tabla a bloques legibles.
+   El HTML conserva sus encabezados para lectores de pantalla. */
+@media (max-width: 700px) {
+    .plan-panel > .table-container, .shopping-panel > .table-container {
+        border: 0;
+        border-radius: 0;
+        overflow: visible;
+    }
+    .meal-table-hint, .shopping-table-hint {
+        display: none;
+    }
+    .meal-table, .shopping-table {
+        display: block;
+        min-width: 0;
+        table-layout: auto;
+    }
+    .meal-table thead, .shopping-table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+    .meal-table caption, .shopping-table caption {
+        display: block;
+        padding: 0 0 16px;
+        background: transparent;
+    }
+    .meal-table tbody, .shopping-table tbody {
+        display: grid;
+        gap: 16px;
+    }
+    .meal-table tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        border: 1px solid #cddfd0;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .meal-table tbody th {
+        display: block;
+        position: static;
+        padding: 13px 16px;
+        border: 0;
+        background: var(--green-dark);
+        color: white;
+        font-size: 14px;
+        font-weight: 650;
+    }
+    .meal-table .meal-cell {
+        display: block;
+        padding: 16px;
+        border: 0;
+        background: white;
+    }
+    .meal-table .meal-cell + .meal-cell {
+        border-top: 1px solid var(--border);
+    }
+    .meal-cell::before, .shopping-table td[data-label]::before {
+        display: block;
+        content: attr(data-label);
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+    }
+    .meal-name {
+        font-size: 16px;
+    }
+    .meal-edit-link, .product-edit-link {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        margin-left: 0;
+        font-size: 13px;
+    }
+    .edited-badge {
+        display: block;
+        width: fit-content;
+    }
+    .shopping-table tbody tr {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #fbfcf9;
+    }
+    .shopping-table th, .shopping-table td, .shopping-table th:first-child {
+        display: block;
+        min-width: 0;
+        padding: 0;
+        border: 0;
+        overflow-wrap: anywhere;
+    }
+    .shopping-table tbody th {
+        grid-column: 1 / -1;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+        font-size: 16px;
+    }
+    .shopping-table td[data-label="Subtotal"] {
+        grid-column: 1 / -1;
+        padding: 10px 12px;
+        border-radius: 7px;
+        background: var(--green-light);
+        color: var(--green-dark);
+        font-weight: 700;
+    }
+    .shopping-table td[data-label="Fuente"] {
+        grid-column: 1 / -1;
+        font-size: 12px;
+    }
+    .shopping-table tfoot {
+        display: block;
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: 10px;
+        background: var(--green-dark);
+        color: white;
+    }
+    .shopping-table tfoot tr {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .shopping-table tfoot td:empty {
+        display: none;
+    }
+}
+
+/* Navegación completa a la vista y controles cómodos para tocar. */
+@media (max-width: 600px) {
+    .header-inner {
+        align-items: center;
+        gap: 12px;
+    }
+    .brand-group {
+        min-width: 0;
+    }
+    .brand {
+        font-size: 24px;
+        gap: 9px;
+    }
+    .brand-mark {
+        width: 44px;
+        height: 44px;
+        padding: 5px;
+        border-radius: 13px 13px 13px 4px;
+    }
+    .account-area {
+        max-width: 130px;
+    }
+    .account-greeting {
+        max-width: 130px;
+        font-size: 11px;
+    }
+    .header-button {
+        min-height: 44px;
+    }
+    .account-nav {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 6px;
+        padding: 0 16px 16px;
+    }
+    .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        grid-column: span 2;
+        min-height: 46px;
+        padding: 9px 6px;
+        background: #ffffff08;
+        border-color: #ffffff12;
+        font-size: 12px;
+        text-align: center;
+        line-height: 1.4;
+    }
+    .nav-link:nth-child(-n+2) {
+        grid-column: span 3;
+    }
+    .site-main {
+        padding: 20px 12px 32px;
+    }
+    .panel {
+        padding: 22px 18px;
+        border-radius: 15px;
+    }
+    .planner-panel {
+        padding: 26px 20px;
+    }
+    .planner-panel h1 {
+        font-size: 28px;
+    }
+    .planner-panel > p:not(.eyebrow) {
+        font-size: 14px;
+    }
+    input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea {
+        font-size: 16px;
+        min-height: 48px;
+    }
+    .calendar-day {
+        min-height: 46px;
+    }
+    .favorite-search {
+        min-height: 48px;
+    }
+    .summary-item {
+        gap: 10px;
+    }
+    .summary dd {
+        font-size: 20px;
+    }
+    .favorite-picker, .ingredient-row {
+        padding: 16px 12px;
+    }
+    .product-photo {
+        height: 190px;
+    }
+    .pagination a {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+    }
+}
+
+/* Las animaciones son breves y solo acompañan una acción. */
+@keyframes aparecer {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes marcar-favorito {
+    0% { transform: scale(0.9); }
+    55% { transform: scale(1.13); }
+    100% { transform: scale(1); }
+}
+.site-main > .panel, .catalog-card {
+    animation: aparecer 350ms ease-out backwards;
+}
+.catalog-card:nth-child(3n+2) {
+    animation-delay: 40ms;
+}
+.catalog-card:nth-child(3n+3) {
+    animation-delay: 80ms;
+}
+.favorite-button[aria-pressed="true"] {
+    animation: marcar-favorito 250ms ease-out;
+}
+.planner-customization[open] .calendar-days {
+    animation: aparecer 200ms ease-out;
+}
+@media (hover: hover) and (pointer: fine) {
+    .catalog-card:hover {
+        transform: translateY(-3px);
+        border-color: #afcbb6;
+        box-shadow: 0 12px 32px #153e3012;
+    }
+    button:not(:disabled):hover, a.button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 12px #153e3014;
+    }
+}
+/* Respeta la preferencia del sistema de reducir el movimiento. */
 @media (prefers-reduced-motion: reduce) {
-    button, .button {
-        transition: none;
+    *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+    .catalog-card:hover, button:hover, a.button:hover {
+        transform: none;
     }
 }
